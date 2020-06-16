@@ -321,3 +321,141 @@ fuel <- data.frame(f1 = c('c', 'd', 'e', 'p', 'r'),
                    price_fl = c(2.35, 2.38, 2.11, 2.76, 2.22),
                    stringsAsFactors = F)
 fuel
+View(mpg)
+
+fuel
+names(fuel)[1] <- c('fl')
+fuel
+
+mpg <- left_join(mpg, fuel, by='fl')
+mpg
+
+mpg %>% 
+    select('model', 'fl', 'price_fl') %>% 
+    head(5)
+
+midwest <- as.data.frame(ggplot2::midwest)
+View(midwest)
+
+midwest <-midwest %>% 
+    mutate(childratio = (1 - popadults / poptotal) * 100)
+View(midwest)
+
+midwest %>% 
+    arrange(desc(childratio)) %>% 
+    select(county, childratio) %>% 
+    head(5)
+
+midwest <- midwest %>% 
+    mutate(childeratio_grade = 
+               ifelse(childratio >= 40, 'large',
+                      ifelse(childratio >= 30, 'middle', 'small')))
+midwest %>% 
+    group_by(childeratio_grade) %>% 
+    summarise(n=n())
+table(midwest$childeratio_grade)
+
+midwest %>% 
+    mutate(asianratio = popasian / poptotal * 100) %>% 
+    arrange(asianratio) %>% 
+    select(state, county, asianratio) %>% 
+    tail(10)
+
+df <- data.frame(sex = c('M', 'F', NA, 'M', 'F'),
+                score = c(5, 4, 3, 4, NA))
+df
+is.na(df)
+
+table(is.na(df))
+table(is.na(df[1]))
+table(is.na(df['sex']))
+table(is.na(df$sex))
+
+sum(df$score)
+
+df %>% filter(is.na(score))
+
+df %>% filter(!is.na(score))
+
+df_nomiss <- df %>% filter(!is.na(score))
+sum(df_nomiss$score)
+
+df_nomiss <- df %>% filter(!is.na(score) & !is.na(sex))
+df_nomiss
+df_nomiss2 <- na.omit(df)
+df_nomiss2
+
+mean(df$score, na.rm = T)
+sum(df$score, na.rm = T)
+
+exam <- read.csv('source/csv_exam.csv')
+exam[c(3, 8, 15), 'math'] <- NA
+exam
+
+exam %>% summarise(mean_math = mean(math))
+exam %>% summarise(mean_math = mean(math, na.rm = T))
+exam %>% summarise(mean_math = mean(math, na.rm = T),
+                   median_math = median(math, na.rm = T),
+                   sd_math = sd(math, na.rm = T))
+
+mean(exam$math, na.rm = T)
+exam$math <- ifelse(is.na(exam$math), 55, exam$math)
+table(is.na(exam$math))
+
+mean(exam$math)
+
+mpg <- as.data.frame(ggplot2::mpg)
+
+mpg[c(65, 124, 131, 153, 212), 'hwy'] <- NA
+table(is.na(mpg$drv))
+table(is.na(mpg$hwy))
+mpg %>% 
+    filter(!is.na(mpg$hwy)) %>% 
+    group_by(drv) %>% 
+    summarise(mean_hwy = mean(hwy))
+
+outlier <- data.frame(sex = c(1, 2, 1, 3, 2, 1),
+                      score = c(5, 4, 3, 4, 2, 6))
+outlier
+table(outlier$sex)
+table(outlier$score)
+
+outlier$sex <- ifelse(outlier$sex == 3, NA, outlier$sex)
+outlier
+outlier$score <- ifelse(outlier$score > 5, NA, outlier$score)
+outlier
+
+outlier %>% 
+    filter(!is.na(sex) & !is.na(score)) %>% 
+    group_by(sex) %>% 
+    summarise(mean_score = mean(score))
+66666666666
+boxplot(mpg$hwy)
+boxplot(mpg$hwy)$stats
+
+
+mpg$hwy <- ifelse(mpg$hwy < 12 | mpg$hwy > 37, NA, mpg$hwy)
+table(is.na(mpg$hwy))
+
+mpg %>% 
+    group_by(drv) %>% 
+    summarize(mean_hwy = mean(hwy, na.rm=T))
+
+mpg <- as.data.frame(ggplot2::mpg)
+mpg[c(10, 14, 58, 93), 'drv'] <- 'k'
+mpg[c(29, 43, 129, 203), 'cty'] <- c(3, 4, 39, 42)
+
+table(mpg$drv)
+mpg$drv <- ifelse(mpg$drv %in% c('4', 'f', 'r'), mpg$drv, NA)
+table(mpg$drv)
+
+boxplot(mpg$cty)
+boxplot(mpg$cty)$stats
+
+mpg$cty <- ifelse(mpg$cty < 9 | mpg$cty > 26, NA, mpg$cty)
+table(is.na(mpg$cty))
+
+mpg %>% 
+    filter(!is.na(cty) & !is.na(drv)) %>% 
+    group_by(drv) %>% 
+    summarise(mean_cty = mean(cty))
